@@ -1,74 +1,645 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Combinatorics Group</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      max-width: 900px;
-      margin: 40px auto;
-      line-height: 1.6;
-      padding: 0 20px;
-    }
-    h1, h2 {
-      border-bottom: 1px solid #ddd;
-      padding-bottom: 5px;
-    }
-    nav a {
-      margin-right: 15px;
-      text-decoration: none;
-      color: #0366d6;
-    }
-    nav {
-      margin-bottom: 20px;
-    }
-    .section {
-      margin-bottom: 40px;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Research Group – Home</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --navy: #1a2e4a;
+    --navy-light: #2a4068;
+    --accent: #2563a8;
+    --accent-light: #e8f0fb;
+    --text: #1a1a1a;
+    --muted: #555;
+    --border: #dde2ea;
+    --bg: #ffffff;
+    --bg2: #f7f8fb;
+    --radius: 6px;
+    --font: 'Georgia', serif;
+    --sans: 'Helvetica Neue', Arial, sans-serif;
+  }
+
+  body { font-family: var(--font); color: var(--text); background: var(--bg); font-size: 16px; line-height: 1.7; }
+
+  /* ── Navbar ── */
+  nav {
+    background: var(--navy);
+    position: sticky; top: 0; z-index: 100;
+    box-shadow: 0 2px 8px rgba(0,0,0,.18);
+  }
+  .nav-inner {
+    max-width: 960px; margin: 0 auto;
+    display: flex; align-items: center; gap: 0;
+  }
+  .nav-brand {
+    display: flex; align-items: center; gap: 10px;
+    padding: 14px 18px 14px 0;
+    text-decoration: none;
+    color: #fff; font-family: var(--sans); font-size: 15px; font-weight: 700;
+    white-space: nowrap;
+  }
+  .nav-brand .logo-circle {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: var(--accent); border: 2px solid rgba(255,255,255,.3);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 900; color: #fff; flex-shrink: 0;
+  }
+  .nav-links { display: flex; list-style: none; gap: 0; }
+  .nav-links > li { position: relative; }
+  .nav-links > li > a, .nav-links > li > button {
+    display: block; padding: 18px 16px;
+    color: rgba(255,255,255,.88); font-family: var(--sans); font-size: 13.5px;
+    text-decoration: none; background: none; border: none; cursor: pointer;
+    white-space: nowrap; transition: background .15s, color .15s;
+  }
+  .nav-links > li > a:hover, .nav-links > li > button:hover,
+  .nav-links > li > a.active { background: rgba(255,255,255,.1); color: #fff; }
+  .dropdown {
+    display: none; position: absolute; top: 100%; left: 0;
+    background: var(--navy-light); min-width: 180px;
+    border-top: 2px solid var(--accent); list-style: none;
+    box-shadow: 0 4px 12px rgba(0,0,0,.2);
+  }
+  .nav-links > li:hover .dropdown { display: block; }
+  .dropdown li a {
+    display: block; padding: 10px 18px;
+    color: rgba(255,255,255,.85); font-family: var(--sans); font-size: 13px;
+    text-decoration: none; transition: background .12s;
+  }
+  .dropdown li a:hover { background: rgba(255,255,255,.1); color: #fff; }
+
+  /* ── Page shell ── */
+  .page { display: none; }
+  .page.active { display: block; }
+  .page-content { max-width: 960px; margin: 0 auto; padding: 40px 20px 60px; }
+
+  /* ── Hero (home) ── */
+  .hero-slider {
+    width: 100%; height: 260px; background: linear-gradient(135deg, #1a3a6b 0%, #2563a8 60%, #3a7bd5 100%);
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-family: var(--sans); font-size: 18px; font-style: italic;
+    letter-spacing: .5px; text-align: center; padding: 20px;
+  }
+  .hero-slider span { opacity: .85; }
+
+  /* ── Typography ── */
+  h1 { font-size: 26px; font-weight: normal; color: var(--navy); margin-bottom: 24px; padding-bottom: 10px; border-bottom: 2px solid var(--border); }
+  h2 { font-size: 20px; font-weight: normal; color: var(--navy); margin: 28px 0 14px; }
+  h3 { font-size: 17px; font-weight: bold; color: var(--text); margin: 20px 0 6px; }
+  h4 { font-size: 15px; font-weight: bold; color: var(--text); margin: 16px 0 4px; }
+  p { margin-bottom: 14px; }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  strong { font-weight: bold; }
+
+  /* ── Home page layout ── */
+  .home-grid { display: grid; grid-template-columns: 1fr 280px; gap: 32px; margin-top: 28px; }
+  @media (max-width: 680px) { .home-grid { grid-template-columns: 1fr; } }
+  .talks-box { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px 20px; }
+  .talks-box h2 { margin-top: 0; font-size: 16px; }
+  .talk-item { border-top: 1px solid var(--border); padding: 12px 0; font-size: 14px; }
+  .talk-item:first-of-type { border-top: none; }
+  .talk-date { color: var(--muted); font-size: 13px; font-family: var(--sans); }
+  .talk-title { font-weight: bold; font-size: 14px; }
+  .talk-speaker { font-size: 14px; }
+
+  /* ── People ── */
+  .faculty-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px; margin-top: 10px; }
+  .faculty-card { display: flex; gap: 16px; align-items: flex-start; background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; }
+  .faculty-photo { width: 72px; height: 88px; border-radius: 4px; background: var(--border); object-fit: cover; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 22px; color: var(--muted); }
+  .faculty-info h4 { margin: 0 0 2px; font-size: 15px; }
+  .faculty-info .role { font-size: 13px; color: var(--muted); font-family: var(--sans); font-style: italic; margin-bottom: 6px; }
+  .faculty-info .interests { font-size: 13px; list-style: disc; padding-left: 16px; color: var(--muted); }
+  .faculty-info .interests li { margin-bottom: 2px; }
+  .section-divider { border: none; border-top: 1px solid var(--border); margin: 30px 0; }
+  .students-table { font-family: var(--sans); font-size: 14px; width: 100%; border-collapse: collapse; }
+  .students-table td { padding: 5px 12px 5px 0; vertical-align: top; color: var(--muted); }
+  .students-table td:first-child { color: var(--text); font-weight: 500; min-width: 160px; }
+
+  /* ── Seminar ── */
+  .seminar-talk { border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 18px; overflow: hidden; }
+  .seminar-talk-header { background: var(--bg2); padding: 14px 18px; }
+  .seminar-talk-header .date { font-family: var(--sans); font-size: 13px; color: var(--muted); margin-bottom: 4px; }
+  .seminar-talk-header .title { font-weight: bold; font-size: 15px; }
+  .seminar-talk-header .speaker { font-size: 14px; color: var(--accent); }
+  .abstract-toggle { display: flex; align-items: center; gap: 8px; background: none; border: none; border-top: 1px solid var(--border); width: 100%; padding: 10px 18px; font-family: var(--sans); font-size: 13px; color: var(--muted); cursor: pointer; text-align: left; }
+  .abstract-toggle:hover { background: var(--bg2); }
+  .abstract-body { display: none; padding: 14px 18px; font-size: 14px; color: var(--muted); border-top: 1px solid var(--border); }
+  .abstract-body.open { display: block; }
+  .year-group { font-family: var(--sans); font-weight: bold; font-size: 16px; color: var(--navy); margin: 28px 0 12px; }
+
+  /* ── News ── */
+  .news-item { display: flex; gap: 18px; border-bottom: 1px solid var(--border); padding: 16px 0; }
+  .news-date { font-family: var(--sans); font-size: 13px; color: var(--muted); min-width: 90px; padding-top: 2px; }
+  .news-text { font-size: 15px; }
+
+  /* ── Workshops ── */
+  .workshop-card { border: 1px solid var(--border); border-radius: var(--radius); padding: 18px 20px; margin-bottom: 18px; }
+  .workshop-card h3 { margin-top: 0; color: var(--accent); }
+  .workshop-meta { font-family: var(--sans); font-size: 13px; color: var(--muted); margin-bottom: 10px; }
+
+  /* ── Teaching ── */
+  .course-row { display: flex; gap: 24px; padding: 12px 0; border-bottom: 1px solid var(--border); font-size: 15px; }
+  .course-sem { font-family: var(--sans); font-size: 13px; color: var(--muted); min-width: 100px; }
+
+  /* ── Hiring ── */
+  .hiring-box { background: var(--accent-light); border: 1px solid #b8d0ee; border-radius: var(--radius); padding: 18px 22px; margin-bottom: 24px; }
+  .req-list { list-style: disc; padding-left: 22px; }
+  .req-list li { margin-bottom: 6px; font-size: 15px; }
+
+  /* ── Visiting ── */
+  .info-table { font-size: 15px; width: 100%; border-collapse: collapse; }
+  .info-table th { text-align: left; font-family: var(--sans); font-size: 13px; color: var(--muted); font-weight: normal; padding: 8px 16px 8px 0; width: 140px; vertical-align: top; }
+  .info-table td { padding: 8px 0; border-bottom: 1px solid var(--border); }
+
+  /* ── Footer ── */
+  footer { background: var(--navy); color: rgba(255,255,255,.6); font-family: var(--sans); font-size: 13px; text-align: center; padding: 18px 20px; margin-top: 40px; }
+  footer a { color: rgba(255,255,255,.7); }
+
+  /* ── Visitors ── */
+  .visitor-list { font-size: 15px; }
+  .visitor-list li { padding: 8px 0; border-bottom: 1px solid var(--border); display: flex; gap: 20px; list-style: none; }
+  .visitor-list li span:first-child { min-width: 200px; font-weight: 500; }
+  .visitor-list li span:last-child { color: var(--muted); font-size: 14px; }
+
+  /* ── Former ── */
+  .former-section { margin-bottom: 28px; }
+  .former-section h3 { margin-bottom: 10px; }
+  .former-grid { display: flex; flex-wrap: wrap; gap: 8px 24px; font-size: 14px; color: var(--muted); }
+</style>
 </head>
 <body>
 
-  <h1>Combinatorics Group</h1>
-
-  <nav>
-    <a href="#home">Home</a>
-    <a href="#people">People</a>
-    <a href="#research">Research</a>
-    <a href="people.html">Publications</a>
-  </nav>
-
-  <div id="home" class="section">
-    <h2>About</h2>
-    <p>We are a research group working at the intersection of combinatorics. Our focus includes probabilistic methods, graph algorithms.</p>
-  </div>
-
-  <div id="people" class="section">
-    <h2>People</h2>
-    <ul>
-      <li><strong>Principal Investigator:</strong> Your Name</li>
-      <li><strong>PhD Students:</strong> Student A, Student B</li>
-      <li><strong>Undergraduates:</strong> Student C</li>
+<!-- ═══════════ NAVBAR ═══════════ -->
+<nav>
+  <div class="nav-inner">
+    <a class="nav-brand" href="#" onclick="showPage('home')">
+      <div class="logo-circle">RG</div>
+      Research Group
+    </a>
+    <ul class="nav-links">
+      <li><a href="#" onclick="showPage('home')" class="active" id="nav-home">Home</a></li>
+      <li>
+        <button>People ▾</button>
+        <ul class="dropdown">
+          <li><a href="#" onclick="showPage('members')">Members</a></li>
+          <li><a href="#" onclick="showPage('visitors')">Visitors</a></li>
+          <li><a href="#" onclick="showPage('former')">Former Members</a></li>
+        </ul>
+      </li>
+      <li>
+        <button>Events ▾</button>
+        <ul class="dropdown">
+          <li><a href="#" onclick="showPage('seminar')">Seminar</a></li>
+          <li><a href="#" onclick="showPage('workshops')">Workshops &amp; Conferences</a></li>
+          <li><a href="#" onclick="showPage('teaching')">Teaching</a></li>
+        </ul>
+      </li>
+      <li><a href="#" onclick="showPage('news')">News</a></li>
+      <li><a href="#" onclick="showPage('hiring')">Hiring</a></li>
+      <li><a href="#" onclick="showPage('visiting')">Visiting</a></li>
     </ul>
   </div>
+</nav>
 
-  <div id="research" class="section">
-    <h2>Research</h2>
-    <ul>
-      <li>Random graphs and probabilistic combinatorics</li>
-      <li>Graph neural networks and theory</li>
+
+<!-- ═══════════ HOME ═══════════ -->
+<div class="page active" id="page-home">
+  <div class="hero-slider">
+    <span>Welcome — replace this banner with a photo of your group or department</span>
+  </div>
+  <div class="page-content">
+    <h1>Welcome to the [Your Group Name]</h1>
+    <div class="home-grid">
+      <div>
+        <p>
+          This is the homepage of the [Group Name] at the [Department], [University].
+        </p>
+        <p>
+          Our research interests cover [research area 1], [research area 2], [research area 3], and their connections to [related fields].
+        </p>
+        <p>
+          <strong>We are looking for highly motivated Postdocs, PhD students, and Master students to join the group (<a href="#" onclick="showPage('hiring')">more info</a>)!</strong>
+        </p>
+      </div>
+      <aside>
+        <div class="talks-box">
+          <h2>Upcoming Talks</h2>
+          <div class="talk-item">
+            <div class="talk-date">Mon, Jan 20, 2025 · 3:00–4:00 pm</div>
+            <div class="talk-speaker"><a href="#">Speaker Name</a> (University)</div>
+            <div class="talk-title">Title of the talk goes here</div>
+          </div>
+          <div class="talk-item">
+            <div class="talk-date">Fri, Feb 7, 2025 · 2:00–3:00 pm</div>
+            <div class="talk-speaker"><a href="#">Another Speaker</a> (Institute)</div>
+            <div class="talk-title">Another interesting talk title</div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════ MEMBERS ═══════════ -->
+<div class="page" id="page-members">
+  <div class="page-content">
+    <h1>Group Members</h1>
+
+    <h2>Faculty</h2>
+    <div class="faculty-grid">
+
+      <div class="faculty-card">
+        <div class="faculty-photo">👤</div>
+        <div class="faculty-info">
+          <h4><a href="#">Professor Name</a></h4>
+          <div class="role">Professor<br>Office: Building, Room XXX<br>Email: <a href="mailto:name@university.edu">name@university.edu</a></div>
+          <ul class="interests">
+            <li>Research Area One</li>
+            <li>Research Area Two</li>
+            <li>Applications to Field</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="faculty-card">
+        <div class="faculty-photo">👤</div>
+        <div class="faculty-info">
+          <h4><a href="#">Associate Professor</a></h4>
+          <div class="role">Associate Professor<br>Office: Building, Room YYY<br>Email: <a href="mailto:name2@university.edu">name2@university.edu</a></div>
+          <ul class="interests">
+            <li>Research Area A</li>
+            <li>Research Area B</li>
+            <li>Research Area C</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="faculty-card">
+        <div class="faculty-photo">👤</div>
+        <div class="faculty-info">
+          <h4><a href="#">Assistant Professor</a></h4>
+          <div class="role">Assistant Professor<br>Office: Building, Room ZZZ<br>Email: <a href="mailto:name3@university.edu">name3@university.edu</a></div>
+          <ul class="interests">
+            <li>Research Topic I</li>
+            <li>Research Topic II</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+
+    <hr class="section-divider">
+    <h2>Postdoctoral Researchers</h2>
+    <table class="students-table">
+      <tr><td>Postdoc Name</td><td>Email: <a href="#">postdoc@university.edu</a></td></tr>
+      <tr><td>Another Postdoc</td><td>Email: <a href="#">postdoc2@university.edu</a></td></tr>
+    </table>
+
+    <hr class="section-divider">
+    <h2>Students</h2>
+    <h4>PhD Students</h4>
+    <table class="students-table">
+      <tr><td>Student Name</td><td>PhD student since 2021</td></tr>
+      <tr><td>Student Name</td><td>PhD student since 2022</td></tr>
+      <tr><td>Student Name</td><td>PhD student since 2022</td></tr>
+      <tr><td>Student Name</td><td>PhD student since 2023</td></tr>
+      <tr><td>Student Name</td><td>PhD student since 2023</td></tr>
+    </table>
+    <h4 style="margin-top:18px">Master Students</h4>
+    <table class="students-table">
+      <tr><td>Student Name</td><td>Master student since 2022</td></tr>
+      <tr><td>Student Name</td><td>Master student since 2022</td></tr>
+      <tr><td>Student Name</td><td>Master student since 2023</td></tr>
+    </table>
+  </div>
+</div>
+
+
+<!-- ═══════════ VISITORS ═══════════ -->
+<div class="page" id="page-visitors">
+  <div class="page-content">
+    <h1>Visitors</h1>
+    <ul class="visitor-list">
+      <li><span>Visitor Name</span><span>University of Origin · Jan–Mar 2025</span></li>
+      <li><span>Another Visitor</span><span>Research Institute · Sep–Dec 2024</span></li>
+      <li><span>Long-term Visitor</span><span>Partner University · Aug 2024–Jul 2025</span></li>
+      <li><span>Short-term Visitor</span><span>Overseas University · Jun 2024</span></li>
     </ul>
   </div>
+</div>
 
-  <div id="publications" class="section">
-    <h2>Publications</h2>
-    <ul>
-      <li>Author, Title, Conference/Journal, Year</li>
-      <li>Author, Title, arXiv link</li>
-    </ul>
+
+<!-- ═══════════ FORMER MEMBERS ═══════════ -->
+<div class="page" id="page-former">
+  <div class="page-content">
+    <h1>Former Members</h1>
+
+    <div class="former-section">
+      <h3>Former Postdoctoral Researchers</h3>
+      <div class="former-grid">
+        <span>Name (2020–2022) → Now at University X</span>
+        <span>Name (2019–2021) → Now at Institute Y</span>
+        <span>Name (2018–2020) → Now at Company Z</span>
+      </div>
+    </div>
+
+    <div class="former-section">
+      <h3>Former PhD Students</h3>
+      <div class="former-grid">
+        <span>Graduate Name (2018–2023)</span>
+        <span>Graduate Name (2017–2022)</span>
+        <span>Graduate Name (2016–2021)</span>
+        <span>Graduate Name (2015–2020)</span>
+      </div>
+    </div>
+
+    <div class="former-section">
+      <h3>Former Master Students</h3>
+      <div class="former-grid">
+        <span>Graduate Name (2021–2023)</span>
+        <span>Graduate Name (2021–2023)</span>
+        <span>Graduate Name (2020–2022)</span>
+      </div>
+    </div>
   </div>
+</div>
 
+
+<!-- ═══════════ SEMINAR ═══════════ -->
+<div class="page" id="page-seminar">
+  <div class="page-content">
+    <h1>Research Seminar</h1>
+
+    <h2>Upcoming Talks</h2>
+    <div class="seminar-talk">
+      <div class="seminar-talk-header">
+        <div class="date">Monday, March 10, 2025 · 3:00–4:00 pm · Room 301</div>
+        <div class="title">Title of Upcoming Talk</div>
+        <div class="speaker"><a href="#">Speaker Name</a> (Affiliation)</div>
+      </div>
+      <button class="abstract-toggle" onclick="toggleAbstract(this)">▶ Abstract</button>
+      <div class="abstract-body">
+        Abstract text goes here. Describe the content of the talk, the main results, and the significance of the work. This section can contain mathematical notation if needed.
+      </div>
+    </div>
+
+    <h2>Past Talks</h2>
+    <div class="year-group">2025</div>
+
+    <div class="seminar-talk">
+      <div class="seminar-talk-header">
+        <div class="date">Friday, January 17, 2025 · 2:00–3:00 pm</div>
+        <div class="title">Title of a Past Talk</div>
+        <div class="speaker"><a href="#">Speaker Name</a> (University of Somewhere)</div>
+      </div>
+      <button class="abstract-toggle" onclick="toggleAbstract(this)">▶ Abstract</button>
+      <div class="abstract-body">
+        This is the abstract of the past talk. It provides context and describes the main contributions presented during the seminar.
+      </div>
+    </div>
+
+    <div class="seminar-talk">
+      <div class="seminar-talk-header">
+        <div class="date">Thursday, January 9, 2025 · 3:00–4:00 pm</div>
+        <div class="title">Another Past Talk Title</div>
+        <div class="speaker"><a href="#">Another Speaker</a> (Research Institute)</div>
+      </div>
+      <button class="abstract-toggle" onclick="toggleAbstract(this)">▶ Abstract</button>
+      <div class="abstract-body">
+        Abstract for another past talk. Replace with actual content for each talk your group hosts.
+      </div>
+    </div>
+
+    <div class="year-group">2024</div>
+
+    <div class="seminar-talk">
+      <div class="seminar-talk-header">
+        <div class="date">Thursday, November 14, 2024 · 3:00–4:00 pm</div>
+        <div class="title">2024 Talk Title</div>
+        <div class="speaker"><a href="#">Speaker Name</a> (Affiliation)</div>
+      </div>
+      <button class="abstract-toggle" onclick="toggleAbstract(this)">▶ Abstract</button>
+      <div class="abstract-body">
+        Abstract for this 2024 talk. Add more talk entries as needed for each year.
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ═══════════ WORKSHOPS ═══════════ -->
+<div class="page" id="page-workshops">
+  <div class="page-content">
+    <h1>Workshops and Conferences</h1>
+
+    <h2>Upcoming</h2>
+    <div class="workshop-card">
+      <h3>Workshop on [Topic Name]</h3>
+      <div class="workshop-meta">📅 July 14–18, 2025 · 📍 [Venue, City]</div>
+      <p>Brief description of the workshop. Include the themes, format (invited talks, contributed talks, poster sessions), and any other relevant information for participants.</p>
+      <p><a href="#">Workshop website →</a></p>
+    </div>
+
+    <h2>Past</h2>
+    <div class="workshop-card">
+      <h3>Conference on [Field] – Annual Meeting 2024</h3>
+      <div class="workshop-meta">📅 September 3–6, 2024 · 📍 [Conference Center, City]</div>
+      <p>Description of the past conference. Include the number of participants, invited speakers, and any highlights or outcomes worth noting.</p>
+    </div>
+
+    <div class="workshop-card">
+      <h3>Summer School on [Topic]</h3>
+      <div class="workshop-meta">📅 June 10–14, 2024 · 📍 [Venue, City]</div>
+      <p>Description of the summer school. This event was organized by members of the group and attracted graduate students from across the region.</p>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ═══════════ TEACHING ═══════════ -->
+<div class="page" id="page-teaching">
+  <div class="page-content">
+    <h1>Teaching</h1>
+
+    <h2>Current Semester</h2>
+    <div class="course-row">
+      <div class="course-sem">Spring 2025</div>
+      <div>
+        <strong><a href="#">Course Name (Course Code)</a></strong><br>
+        <span style="font-size:14px;color:var(--muted)">Instructor: Professor Name · Mon/Wed 10:00–11:30 · Room 201</span>
+      </div>
+    </div>
+    <div class="course-row">
+      <div class="course-sem">Spring 2025</div>
+      <div>
+        <strong><a href="#">Another Course (Code)</a></strong><br>
+        <span style="font-size:14px;color:var(--muted)">Instructor: Professor Name · Tue/Thu 14:00–15:30 · Room 105</span>
+      </div>
+    </div>
+
+    <h2 style="margin-top:32px">Past Courses</h2>
+    <div class="course-row">
+      <div class="course-sem">Fall 2024</div>
+      <div>
+        <strong>Course Name (Code)</strong><br>
+        <span style="font-size:14px;color:var(--muted)">Instructor: Professor Name</span>
+      </div>
+    </div>
+    <div class="course-row">
+      <div class="course-sem">Fall 2024</div>
+      <div>
+        <strong>Course Name (Code)</strong><br>
+        <span style="font-size:14px;color:var(--muted)">Instructor: Professor Name</span>
+      </div>
+    </div>
+    <div class="course-row">
+      <div class="course-sem">Spring 2024</div>
+      <div>
+        <strong>Course Name (Code)</strong><br>
+        <span style="font-size:14px;color:var(--muted)">Instructor: Professor Name</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ═══════════ NEWS ═══════════ -->
+<div class="page" id="page-news">
+  <div class="page-content">
+    <h1>News</h1>
+
+    <div class="news-item">
+      <div class="news-date">Mar 2025</div>
+      <div class="news-text">Congratulations to <strong>Student Name</strong> for successfully defending their PhD thesis!</div>
+    </div>
+    <div class="news-item">
+      <div class="news-date">Feb 2025</div>
+      <div class="news-text">Our paper "<em>Title of Paper</em>" has been accepted at <strong>Journal/Conference Name</strong>.</div>
+    </div>
+    <div class="news-item">
+      <div class="news-date">Jan 2025</div>
+      <div class="news-text"><strong>Professor Name</strong> has been awarded the [Award Name] for their contributions to [field].</div>
+    </div>
+    <div class="news-item">
+      <div class="news-date">Dec 2024</div>
+      <div class="news-text">The group hosted a successful workshop on [Topic] with XX participants from YY institutions.</div>
+    </div>
+    <div class="news-item">
+      <div class="news-date">Oct 2024</div>
+      <div class="news-text">Welcome to our new postdoc <strong>Dr. Name</strong>, who joins us from [University]!</div>
+    </div>
+    <div class="news-item">
+      <div class="news-date">Sep 2024</div>
+      <div class="news-text">The group welcomes X new PhD students for the academic year 2024–2025.</div>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ═══════════ HIRING ═══════════ -->
+<div class="page" id="page-hiring">
+  <div class="page-content">
+    <h1>Postdoctoral Fellowship</h1>
+
+    <div class="hiring-box">
+      <strong>We are actively hiring!</strong> The [Department] invites applications for Postdoctoral Positions to work with members of the research group. We are hiring up to [N] postdocs (within 5 years after PhD), with a [2 + 1]-year contract.
+    </div>
+
+    <p><strong>Application deadline:</strong> [Date], until 18:00 [Timezone].</p>
+
+    <p>We seek outstanding candidates in the following areas:</p>
+    <ul class="req-list">
+      <li>Research Area One</li>
+      <li>Research Area Two</li>
+      <li>Research Area Three</li>
+      <li>Research Area Four</li>
+    </ul>
+
+    <p style="margin-top:18px">The position comes with excellent research conditions and a starting salary of [amount]. The anticipated starting date is [date], but earlier or later is also possible. The position does <strong>not</strong> carry teaching duties.</p>
+
+    <h2>Application Materials Required</h2>
+    <ul class="req-list">
+      <li>Cover letter</li>
+      <li>Curriculum vitae</li>
+      <li>Research statement (max. 5 pages)</li>
+      <li>Publication list</li>
+      <li>At least 2 recommendation letters (3 recommended)</li>
+    </ul>
+
+    <p style="margin-top:18px"><strong>Applications:</strong> Please apply through <a href="https://www.mathjobs.org" target="_blank">mathjobs.org</a> or send materials directly to <a href="mailto:contact@university.edu">contact@university.edu</a>.</p>
+
+    <p>For questions, contact <a href="mailto:faculty@university.edu">Professor Name</a>.</p>
+
+  </div>
+</div>
+
+
+<!-- ═══════════ VISITING ═══════════ -->
+<div class="page" id="page-visiting">
+  <div class="page-content">
+    <h1>Visiting Information</h1>
+
+    <p>We welcome visitors to our group. Below is practical information to help you plan your visit.</p>
+
+    <h2>Location</h2>
+    <table class="info-table">
+      <tr><th>Address</th><td>[Building Name], [Department], [University], [City], [Country]</td></tr>
+      <tr><th>Office</th><td>Room [XXX], [Building]</td></tr>
+      <tr><th>Campus map</th><td><a href="#">View campus map →</a></td></tr>
+    </table>
+
+    <h2 style="margin-top:28px">Getting Here</h2>
+    <h3>By Air</h3>
+    <p>The nearest airport is [Airport Name]. From the airport, you can take [transport options] to reach the university. Journey time is approximately [X] minutes.</p>
+
+    <h3>By Train</h3>
+    <p>The main train station is [Station Name]. From there, take [bus/metro line] to [stop name], then walk [X] minutes to the department.</p>
+
+    <h3>By Car</h3>
+    <p>Visitor parking is available at [parking lot name/location]. A visitor parking permit can be arranged by contacting [name/email].</p>
+
+    <h2 style="margin-top:28px">Accommodation</h2>
+    <p>We recommend the following hotels near the university:</p>
+    <ul class="req-list">
+      <li><a href="#">Hotel Name</a> — [distance] from campus, [price range]</li>
+      <li><a href="#">Hotel Name</a> — [distance] from campus, [price range]</li>
+      <li><a href="#">Guesthouse Name</a> — on-campus option, contact us for booking</li>
+    </ul>
+
+    <h2 style="margin-top:28px">Contact</h2>
+    <p>To arrange a visit, please contact <a href="mailto:contact@university.edu">contact@university.edu</a>.</p>
+
+  </div>
+</div>
+
+
+<!-- ═══════════ FOOTER ═══════════ -->
+<footer>
+  © 2025 [Research Group Name] · <a href="#">[University Name]</a>
+</footer>
+
+
+<script>
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+function toggleAbstract(btn) {
+  const body = btn.nextElementSibling;
+  const open = body.classList.toggle('open');
+  btn.textContent = (open ? '▼' : '▶') + ' Abstract';
+}
+</script>
 </body>
 </html>
